@@ -11,6 +11,10 @@ enum ButtonStackState {
     case left, right
 }
 
+enum cardState {
+    case leftSwiped, rightSwiped , notSwiped
+}
+
 class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     
     @IBOutlet weak var baseView: UIView!
@@ -72,26 +76,35 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        if (pan != nil && pan.state == UIGestureRecognizer.State.changed) {
-            let p: CGPoint = pan.translation(in: self)
-            let width = self.mainView.frame.width
-            let height = self.mainView.frame.height
-            self.mainView.frame = CGRect(x: p.x,y: 0, width: width, height: height)
-        }
+        
     }
     
     @objc func onPan(_ pan: UIPanGestureRecognizer) {
-        if pan.state == UIGestureRecognizer.State.began {
-            let velocity = pan.velocity(in: self)
+        let velocity = pan.velocity(in: self)
+        switch pan.state {
+        case .began:
             if velocity.x > 0 {
                 changeButtonStackState(to: .left)
             } else {
                 changeButtonStackState(to: .right)
             }
-        } else if pan.state == UIGestureRecognizer.State.changed {
+        case .changed:
+            let p: CGPoint = pan.translation(in: self)
+            let width = self.mainView.frame.width
+            let height = self.mainView.frame.height
+            if velocity.x < 0 && p.x > baseView.frame.width/2 {
+                self.mainView.frame = CGRect(x: p.x,y: 0, width: width, height: height)
+            }
+            if velocity.x > 0 && p.x < baseView.frame.width/2 {
+                self.mainView.frame = CGRect(x: p.x,y: 0, width: width, height: height)
+            }
             self.setNeedsLayout()
-        } else {
-            
+        case .ended:
+            break
+        case .cancelled:
+            break
+        default:
+            break
         }
     }
     
