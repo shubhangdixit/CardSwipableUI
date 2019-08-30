@@ -38,8 +38,9 @@
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4gc-q5-A7U">
                                                     <rect key="frame" x="0.0" y="0.0" width="412" height="193"/>
                                                     <subviews>
-                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="AeN-sC-7Tx">
+                                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="AeN-sC-7Tx">
                                                             <rect key="frame" x="206" y="0.0" width="206" height="193"/>
+                                                            <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         </stackView>
                                                     </subviews>
                                                     <color key="backgroundColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
@@ -60,7 +61,7 @@
                                                             <nil key="highlightedColor"/>
                                                         </label>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Card" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="a98-fk-0Kg">
-                                                            <rect key="frame" x="333" y="23" width="45" height="28"/>
+                                                            <rect key="frame" x="333" y="23" width="45" height="27.5"/>
                                                             <fontDescription key="fontDescription" name="Avenir-Black" family="Avenir" pointSize="20"/>
                                                             <color key="textColor" red="0.94901960780000005" green="0.94901960780000005" blue="0.94901960780000005" alpha="1" colorSpace="calibratedRGB"/>
                                                             <nil key="highlightedColor"/>
@@ -92,7 +93,7 @@
                                             <outlet property="baseView" destination="4gc-q5-A7U" id="Vpb-Fe-S7e"/>
                                             <outlet property="buttonsStackLeadingConstraint" destination="PxI-9B-K3B" id="gbd-4x-Mtc"/>
                                             <outlet property="buttonsStackTrailingConstraint" destination="rAR-gf-SfS" id="7GX-Nd-2Yr"/>
-                                            <outlet property="buttonsStackView" destination="AeN-sC-7Tx" id="PhQ-kz-HwJ"/>
+                                            <outlet property="buttonsStackView" destination="AeN-sC-7Tx" id="6Wb-sn-Fz3"/>
                                             <outlet property="cardName" destination="a98-fk-0Kg" id="Y98-kZ-53p"/>
                                             <outlet property="mainView" destination="Yqh-Gc-c7n" id="pqW-ef-sqC"/>
                                         </connections>

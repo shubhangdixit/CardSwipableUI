@@ -17,7 +17,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     let cards : [(name: String, type: UIColor)] = [(name:"Blue", type:.blue),
                                        (name: "Red", type: .red),
                                        (name: "Purple", type: .purple),
-                                       (name: "Yellow", type: .yellow),
+                                       (name: "Orange", type: .orange),
                                        (name: "Grey", type: .gray ),
                                        (name:"Green", type: .green)]
     
@@ -30,9 +30,9 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         collectionView.dataSource = self
     }
     
-    func getButtonList() -> [(name: String, type: ButtonType)] {
+    func getButtonList(forIndex index : Int) -> [(name: String, type: ButtonType)] {
         var buttons: [(name: String, type: ButtonType)] = []
-        let count = Int.random(in: 1...3)
+        let count = (index % 3) + 1
         let buttonList = [ButtonType.first, ButtonType.second, ButtonType.third]
         for index in 1...count {
             buttons.append((name: buttonList[index-1].rawValue, type: buttonList[index-1]))
@@ -46,7 +46,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "SwipableCollectionViewCell", for: indexPath) as! SwipableCollectionViewCell
-        cell.buttons = getButtonList()
+        cell.buttons = getButtonList(forIndex: indexPath.row)
         cell.setCardStyle(name: cards[indexPath.row].name, color: cards[indexPath.row].type)
         cell.clipsToBounds = false
         return cell

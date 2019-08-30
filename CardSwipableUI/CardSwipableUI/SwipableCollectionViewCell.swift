@@ -25,31 +25,24 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
     var buttons: [(name: String, type: ButtonType)] = []
     var pan: UIPanGestureRecognizer!
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        //commonInit()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        //commonInit()
-    }
-    
     override func awakeFromNib() {
         commonInit()
+        mainView.layer.masksToBounds = true
+        mainView.layer.cornerRadius = 20
+        baseView.layer.cornerRadius = 20
+        baseView.layer.masksToBounds = true
     }
     
     func setCardStyle(name : String, color : UIColor ) {
-        cardName.text = name + " Color"
+        cardName.text = name + " Card"
         mainView.backgroundColor = color
+        
+        if buttonsStackView.arrangedSubviews.count > 0 {
+            emptyStackView()
+        }
+        
         for button in buttons {
-            let newButton = UIButton(type: .custom)
-            newButton.titleLabel?.text = button.name
-            newButton.accessibilityIdentifier = button.type.rawValue
-            newButton.titleLabel?.font = UIFont(name: "Avenir-Black", size: 12)
-            newButton.titleLabel?.textColor = UIColor.white
-            newButton.addTarget(self, action: #selector(handleButtonActions), for: .touchUpInside)
-            buttonsStackView.addArrangedSubview(newButton)
+            buttonsStackView.addArrangedSubview(getButton(forTitle: button.name, identifier: button.type.rawValue))
         }
     }
     
@@ -58,9 +51,17 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
             pan = UIPanGestureRecognizer(target: self, action: #selector(onPan(_:)))
             pan.delegate = self
             mainView.addGestureRecognizer(pan)
-            
-           
         }
+    }
+    
+    func getButton(forTitle title : String, identifier : String) -> UIButton {
+        let newButton = UIButton(type: .custom)
+        newButton.setTitle(title, for: .normal)
+        newButton.titleLabel?.font = UIFont(name: "Avenir-Black", size: 15)
+        newButton.setTitleColor(.white, for: .normal)
+        newButton.accessibilityIdentifier = identifier
+        newButton.addTarget(self, action: #selector(handleButtonActions), for: .touchUpInside)
+        return newButton
     }
     
     
@@ -101,10 +102,12 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
                 let shift = buttonsStackLeadingConstraint.constant
                 buttonsStackLeadingConstraint.constant = 0
                 buttonsStackTrailingConstraint.constant =  shift
+                buttonsStackState = .left
             case .right:
                 let shift = buttonsStackTrailingConstraint.constant
                 buttonsStackTrailingConstraint.constant = 0
                 buttonsStackLeadingConstraint.constant =  shift
+                buttonsStackState = .right
             }
             buttonsStackView.layoutIfNeeded()
         }
@@ -116,5 +119,13 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return abs((pan.velocity(in: pan.view)).x) > abs((pan.velocity(in: pan.view)).y)
+    }
+    
+    func emptyStackView() {
+        let views = buttonsStackView.arrangedSubviews
+        for view in views {
+            buttonsStackView.removeArrangedSubview(view)
+            view.removeFromSuperview()
+        }
     }
 }
