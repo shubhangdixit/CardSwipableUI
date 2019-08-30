@@ -27,33 +27,39 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
+        //commonInit()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
+        //commonInit()
+    }
+    
+    override func awakeFromNib() {
         commonInit()
     }
     
     func setCardStyle(name : String, color : UIColor ) {
         cardName.text = name + " Color"
         mainView.backgroundColor = color
+        for button in buttons {
+            let newButton = UIButton(type: .custom)
+            newButton.titleLabel?.text = button.name
+            newButton.accessibilityIdentifier = button.type.rawValue
+            newButton.titleLabel?.font = UIFont(name: "Avenir-Black", size: 12)
+            newButton.titleLabel?.textColor = UIColor.white
+            newButton.addTarget(self, action: #selector(handleButtonActions), for: .touchUpInside)
+            buttonsStackView.addArrangedSubview(newButton)
+        }
     }
     
     private func commonInit() {
-        if buttons.count > 0 {
+        if true {
             pan = UIPanGestureRecognizer(target: self, action: #selector(onPan(_:)))
             pan.delegate = self
             mainView.addGestureRecognizer(pan)
             
-            for button in buttons {
-                let newButton = UIButton(type: .custom)
-                newButton.titleLabel?.text = button.name
-                newButton.accessibilityIdentifier = button.type.rawValue
-                newButton.titleLabel?.font = UIFont(name: "Avenir-Black", size: 12)
-                newButton.addTarget(self, action: #selector(handleButtonActions), for: .touchUpInside)
-                buttonsStackView.addArrangedSubview(newButton)
-            }
+           
         }
     }
     
@@ -65,7 +71,7 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        if (pan.state == UIGestureRecognizer.State.changed) {
+        if (pan != nil && pan.state == UIGestureRecognizer.State.changed) {
             let p: CGPoint = pan.translation(in: self)
             let width = self.mainView.frame.width
             let height = self.mainView.frame.height
