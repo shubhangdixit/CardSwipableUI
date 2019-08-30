@@ -8,6 +8,10 @@
 
 import UIKit
 
+enum ButtonType : String {
+    case first = "first", second = "second" , third = "third"
+}
+
 class ViewController: UIViewController {
 
     override func viewDidLoad() {

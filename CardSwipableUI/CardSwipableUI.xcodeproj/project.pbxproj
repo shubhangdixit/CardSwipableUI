@@ -14,6 +14,7 @@
 		9D79645423194A0100D5B8E3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9D79645223194A0100D5B8E3 /* LaunchScreen.storyboard */; };
 		9D79645F23194A0100D5B8E3 /* CardSwipableUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D79645E23194A0100D5B8E3 /* CardSwipableUITests.swift */; };
 		9D79646A23194A0100D5B8E3 /* CardSwipableUIUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D79646923194A0100D5B8E3 /* CardSwipableUIUITests.swift */; };
+		9D79647823194E7300D5B8E3 /* SwipableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D79647723194E7300D5B8E3 /* SwipableCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		9D79646523194A0100D5B8E3 /* CardSwipableUIUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardSwipableUIUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D79646923194A0100D5B8E3 /* CardSwipableUIUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardSwipableUIUITests.swift; sourceTree = "<group>"; };
 		9D79646B23194A0100D5B8E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9D79647723194E7300D5B8E3 /* SwipableCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipableCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +105,7 @@
 				9D79645023194A0000D5B8E3 /* Assets.xcassets */,
 				9D79645223194A0100D5B8E3 /* LaunchScreen.storyboard */,
 				9D79645523194A0100D5B8E3 /* Info.plist */,
+				9D79647723194E7300D5B8E3 /* SwipableCollectionViewCell.swift */,
 			);
 			path = CardSwipableUI;
 			sourceTree = "<group>";
@@ -258,6 +261,7 @@
 			files = (
 				9D79644C23194A0000D5B8E3 /* ViewController.swift in Sources */,
 				9D79644A23194A0000D5B8E3 /* AppDelegate.swift in Sources */,
+				9D79647823194E7300D5B8E3 /* SwipableCollectionViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
