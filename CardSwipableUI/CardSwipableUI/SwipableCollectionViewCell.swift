@@ -7,6 +7,10 @@
 //
 import UIKit
 
+protocol SwipableCardButtonActionDelegate {
+    func registerAction(forIdentifier iD : String)
+}
+
 enum ButtonStackState {
     case left, right
 }
@@ -20,13 +24,14 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
     @IBOutlet weak var buttonsStackLeadingConstraint : NSLayoutConstraint!
     @IBOutlet weak var buttonsStackTrailingConstraint: NSLayoutConstraint!
     
-    var swipableCardOriginX : CGFloat = 0    // Stores initial origin before swipe begins
-    var buttonsStackState : ButtonStackState = .right    // state of stack view , left or Right
-    var buttons: [(name: String, type: ButtonType)] = []
+    var delegate : SwipableCardButtonActionDelegate?
+    
+    var swipableCardOriginX : CGFloat = 0                   // Stores initial origin before swipe begins
+    var buttonsStackState : ButtonStackState = .right       // state of stack view , left or Right
+    var buttons: [(name: String, type: ButtonType)] = []    // List of buttons to be visisble after Swipe
     var pan: UIPanGestureRecognizer!
     
     override func awakeFromNib() {
-        commonInit()
         mainView.layer.masksToBounds = true
         mainView.layer.cornerRadius = 20
         baseView.layer.cornerRadius = 20
@@ -38,35 +43,27 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
         mainView.backgroundColor = color
         
         if buttonsStackView.arrangedSubviews.count > 0 {
-            emptyStackView()
+            emptyStackView()     // empty stack view for reusing cell
         }
         
         for button in buttons {
             buttonsStackView.addArrangedSubview(getButton(forTitle: button.name, identifier: button.type.rawValue))
         }
+        setUpGestures()
     }
     
-    private func commonInit() {
-        if true {
+    private func setUpGestures() {
+        if buttons.count > 0 {       // no Swipe if no buttons to show ater swipe
             pan = UIPanGestureRecognizer(target: self, action: #selector(onPan(_:)))
             pan.delegate = self
             mainView.addGestureRecognizer(pan)
         }
     }
     
-    func getButton(forTitle title : String, identifier : String) -> UIButton {
-        let newButton = UIButton(type: .custom)
-        newButton.setTitle(title, for: .normal)
-        newButton.titleLabel?.font = UIFont(name: "Avenir-Black", size: 15)
-        newButton.setTitleColor(.white, for: .normal)
-        newButton.accessibilityIdentifier = identifier
-        newButton.addTarget(self, action: #selector(handleButtonActions), for: .touchUpInside)
-        return newButton
-    }
-    
-    
     @objc func handleButtonActions(sender: UIButton){
-        
+        if (delegate != nil) {
+            delegate?.registerAction(forIdentifier: sender.accessibilityIdentifier ?? "")
+        }
     }
     
     override func layoutSubviews() {
@@ -74,70 +71,50 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
     }
     
     @objc func onPan(_ pan: UIPanGestureRecognizer) {
-        let velocity = pan.velocity(in: self)
-        let initialX = baseView.frame.origin.x
         
-        let swipableLength = mainView.frame.width / 2
+        let velocity = pan.velocity(in: self)
+        let baseX = baseView.frame.origin.x
+        let swipableLength = mainView.frame.width / 2   // card can only be swiped to half of its length
         let width = self.mainView.frame.width
         let height = self.mainView.frame.height
+        
         switch pan.state {
         case .began:
             swipableCardOriginX = mainView.frame.origin.x
             if swipableCardOriginX == baseView.frame.origin.x {
-            if velocity.x > 0 {
-                changeButtonStackState(to: .left)
-            } else {
-                changeButtonStackState(to: .right)
-            }
-            }
-        case .changed:
-            let p: CGPoint = pan.translation(in: mainView)
-            if p.x >= (initialX - swipableLength) && p.x <= (initialX + swipableLength) {
-                self.mainView.frame = CGRect(x: swipableCardOriginX + p.x, y: 0, width: width, height: height)
+                velocity.x > 0 ? changeButtonStackState(to: .left) : changeButtonStackState(to: .right)
             }
             
-        self.setNeedsLayout()
+        case .changed:
+            let p: CGPoint = pan.translation(in: mainView)
+            if p.x >= (baseX - swipableLength) && p.x <= (baseX + swipableLength) {
+                self.mainView.frame = CGRect(x: swipableCardOriginX + p.x, y: 0, width: width, height: height)
+            }
+            self.setNeedsLayout()
+            
         case .ended:
-            let finalX = mainView.frame.origin.x
+            let finalX = mainView.frame.origin.x   // main views final position after swipe ended
             let p = swipableLength / 5
             if velocity.x > 0 {
-                if finalX < (initialX - (p * 4)) {
-                    //self.mainView.frame = CGRect(x: initialX - swipableLength, y: 0, width: width, height: height)
-                    animateSwipe(toPosition: initialX - swipableLength)
-                } else if finalX >= (initialX - (p * 4)) && finalX < p {
-                   // self.mainView.frame = CGRect(x: initialX, y: 0, width: width, height: height)
-                    animateSwipe(toPosition: initialX)
+                if finalX < (baseX - (p * 4)) {
+                    animateSwipe(toPosition: baseX - swipableLength)
+                } else if finalX >= (baseX - (p * 4)) && finalX < p {
+                    animateSwipe(toPosition: baseX)
                 } else {
-                   // self.mainView.frame = CGRect(x: initialX + swipableLength, y: 0, width: width, height: height)
-                    animateSwipe(toPosition: initialX + swipableLength)
+                    animateSwipe(toPosition: baseX + swipableLength)
                 }
             } else {
-                if finalX > (initialX + (p * 4)) {
-                    //self.mainView.frame = CGRect(x: initialX + swipableLength, y: 0, width: width, height: height)
-                    animateSwipe(toPosition: initialX + swipableLength)
-                } else if finalX >= (initialX - p) && finalX <= (initialX + (p * 4))  {
-                   // self.mainView.frame = CGRect(x: initialX, y: 0, width: width, height: height)
-                    animateSwipe(toPosition: initialX)
+                if finalX > (baseX + (p * 4)) {
+                    animateSwipe(toPosition: baseX + swipableLength)
+                } else if finalX >= (baseX - p) && finalX <= (baseX + (p * 4))  {
+                    animateSwipe(toPosition: baseX)
                 } else {
-                   // self.mainView.frame = CGRect(x: initialX - swipableLength, y: 0, width: width, height: height)
-                    animateSwipe(toPosition: initialX - swipableLength)
+                    animateSwipe(toPosition: baseX - swipableLength)
                 }
             }
-        case .cancelled:
-            break
+            
         default:
             break
-        }
-    }
-    
-    func animateSwipe(toPosition x:CGFloat) {
-        let width = self.mainView.frame.width
-        let height = self.mainView.frame.height
-        UIView.animate(withDuration: 0.3, delay: 0.1, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
-            self.mainView.frame = CGRect(x: x, y: 0, width: width, height: height)
-            self.contentView.layoutIfNeeded()
-        }) { (_) in
-            // Follow up animations...
         }
     }
     
@@ -159,12 +136,38 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
         }
     }
     
+    // MARK: UIGestureRecognizerDelegate functions
+    
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
     
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         return abs((pan.velocity(in: pan.view)).x) > abs((pan.velocity(in: pan.view)).y)
+    }
+    
+    func animateSwipe(toPosition x:CGFloat) {
+        
+        let width = self.mainView.frame.width
+        let height = self.mainView.frame.height
+        
+        UIView.animate(withDuration: 0.3, delay: 0.1, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
+            self.mainView.frame = CGRect(x: x, y: 0, width: width, height: height)
+            self.contentView.layoutIfNeeded()
+        }) { (_) in
+        }
+    }
+    
+    // MARK:  utility functions
+    
+    func getButton(forTitle title : String, identifier : String) -> UIButton {
+        let newButton = UIButton(type: .custom)
+        newButton.setTitle(title, for: .normal)
+        newButton.titleLabel?.font = UIFont(name: "Avenir-Black", size: 15)
+        newButton.setTitleColor(.white, for: .normal)
+        newButton.accessibilityIdentifier = identifier
+        newButton.addTarget(self, action: #selector(handleButtonActions), for: .touchUpInside)
+        return newButton
     }
     
     func emptyStackView() {
