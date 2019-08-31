@@ -101,7 +101,10 @@
                                 </cells>
                             </collectionView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Cards" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eXa-Fm-0uC">
-                                <rect key="frame" x="37" y="75" width="95" height="48"/>
+                                <rect key="frame" x="37" y="75" width="377" height="48"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="GOE-7i-hZN"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" name="Avenir-Black" family="Avenir" pointSize="35"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
@@ -111,11 +114,11 @@
                         <constraints>
                             <constraint firstItem="eGK-A4-fv9" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="91" id="63N-Zo-3LA"/>
                             <constraint firstItem="eGK-A4-fv9" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="H3U-NR-WGX"/>
-                            <constraint firstItem="eXa-Fm-0uC" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="O8J-kw-7Vz"/>
-                            <constraint firstItem="eXa-Fm-0uC" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="31" id="OOx-FI-cIZ"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="eXa-Fm-0uC" secondAttribute="trailing" constant="282" id="XNH-HD-oL2"/>
+                            <constraint firstItem="eGK-A4-fv9" firstAttribute="top" secondItem="eXa-Fm-0uC" secondAttribute="bottom" constant="12" id="del-ci-cUh"/>
                             <constraint firstItem="eGK-A4-fv9" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="exy-9I-gVt"/>
+                            <constraint firstItem="eXa-Fm-0uC" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="37" id="jsn-sb-ufQ"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="eGK-A4-fv9" secondAttribute="bottom" id="poh-Lj-AH4"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" relation="lessThanOrEqual" secondItem="eXa-Fm-0uC" secondAttribute="trailing" symbolic="YES" id="yA3-Kf-a27"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>

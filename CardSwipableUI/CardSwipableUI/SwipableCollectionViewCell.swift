@@ -34,7 +34,6 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
     var delegate : SwipableCardButtonActionDelegate?
     
     var swipableCardOriginX : CGFloat = 0                   // Stores initial origin before swipe begins
-    var buttonsStackState : ButtonStackState = .right       // state of stack view , left or Right
     var buttons: [(name: String, type: ButtonType)] = []    // List of buttons to be visisble after Swipe
     var pan: UIPanGestureRecognizer!
     
@@ -126,21 +125,15 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
     }
     
     func changeButtonStackState(to state:ButtonStackState) {
-        if buttonsStackState != state {
             switch state {
             case .left :
-                let shift = buttonsStackLeadingConstraint.constant
                 buttonsStackLeadingConstraint.constant = 0
-                buttonsStackTrailingConstraint.constant =  shift
-                buttonsStackState = .left
+                buttonsStackTrailingConstraint.constant =  baseView.frame.width/2
             case .right:
-                let shift = buttonsStackTrailingConstraint.constant
                 buttonsStackTrailingConstraint.constant = 0
-                buttonsStackLeadingConstraint.constant =  shift
-                buttonsStackState = .right
+                buttonsStackLeadingConstraint.constant =  baseView.frame.width/2
             }
             buttonsStackView.layoutIfNeeded()
-        }
     }
     
     // MARK: UIGestureRecognizerDelegate functions
