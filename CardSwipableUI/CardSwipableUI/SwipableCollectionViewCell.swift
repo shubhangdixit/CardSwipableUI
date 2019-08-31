@@ -5,6 +5,13 @@
 //  Created by Shubhang Dixit on 30/08/19.
 //  Copyright © 2019 Shubhang. All rights reserved.
 //
+
+//Note :  Buttons are dynaimic. Any number of buttons can be sent from controller to the cell.
+//        Each cell can have different number of buttons.
+//        Number and buttons has be sent from VC
+//        Button action are Delegated to Controller from Cell.
+//        On Card swipe, buttons on both side are same and contained in same stack view. Stack view is moved left or right according to swipe direction.
+
 import UIKit
 
 protocol SwipableCardButtonActionDelegate {
