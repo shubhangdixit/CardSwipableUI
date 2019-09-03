@@ -16,6 +16,9 @@ import UIKit
 
 protocol SwipableCardButtonActionDelegate {
     func registerAction(forIdentifier iD : String)
+    func registerSelection(forCell row : Int)
+    func tutorialAnimationDidBegin()
+    func tutorialAnimationDidFinish()
 }
 
 enum ButtonStackState {
@@ -42,6 +45,7 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
         mainView.layer.cornerRadius = 20
         baseView.layer.cornerRadius = 20
         baseView.layer.masksToBounds = true
+        
     }
     
     func setCardStyle(name : String, color : UIColor ) {
@@ -56,6 +60,7 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
             buttonsStackView.addArrangedSubview(getButton(forTitle: button.name, identifier: button.type.rawValue))
         }
         setUpGestures()
+        resetCell()
     }
     
     private func setUpGestures() {
@@ -74,7 +79,8 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
     
     override func layoutSubviews() {
         super.layoutSubviews()
-    }
+        
+    }    
     
     @objc func onPan(_ pan: UIPanGestureRecognizer) {
         
@@ -86,6 +92,9 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
         
         switch pan.state {
         case .began:
+            if delegate != nil {
+                delegate?.registerSelection(forCell: self.tag)
+            }
             swipableCardOriginX = mainView.frame.origin.x
             if swipableCardOriginX == baseView.frame.origin.x {
                 velocity.x > 0 ? changeButtonStackState(to: .left) : changeButtonStackState(to: .right)
@@ -125,15 +134,15 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
     }
     
     func changeButtonStackState(to state:ButtonStackState) {
-            switch state {
-            case .left :
-                buttonsStackLeadingConstraint.constant = 0
-                buttonsStackTrailingConstraint.constant =  baseView.frame.width/2
-            case .right:
-                buttonsStackTrailingConstraint.constant = 0
-                buttonsStackLeadingConstraint.constant =  baseView.frame.width/2
-            }
-            buttonsStackView.layoutIfNeeded()
+        switch state {
+        case .left :
+            buttonsStackLeadingConstraint.constant = 0
+            buttonsStackTrailingConstraint.constant =  baseView.frame.width/2
+        case .right:
+            buttonsStackTrailingConstraint.constant = 0
+            buttonsStackLeadingConstraint.constant =  baseView.frame.width/2
+        }
+        buttonsStackView.layoutIfNeeded()
     }
     
     // MARK: UIGestureRecognizerDelegate functions
@@ -155,6 +164,41 @@ class SwipableCollectionViewCell: UICollectionViewCell, UIGestureRecognizerDeleg
             self.mainView.frame = CGRect(x: x, y: 0, width: width, height: height)
             self.contentView.layoutIfNeeded()
         }) { (_) in
+        }
+    }
+    
+    func resetCell() {
+        animateSwipe(toPosition: 0)
+    }
+    
+    func showInitialSwipeAnimations() {
+        let swipableLength = mainView.frame.width / 2   // card can only be swiped to half of its length
+        let width = self.mainView.frame.width
+        let height = self.mainView.frame.height
+        let initialX = self.mainView.frame.origin.x
+        changeButtonStackState(to: .right)
+        delegate?.tutorialAnimationDidBegin()
+        UIView.animate(withDuration: 0.3, delay: 1, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
+            self.mainView.frame = CGRect(x: initialX - swipableLength, y: 0, width: width, height: height)
+            self.contentView.layoutIfNeeded()
+        }) { (_) in
+            UIView.animate(withDuration: 0.3, delay: 0.5, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
+                self.mainView.frame = CGRect(x: initialX, y: 0, width: width, height: height)
+                self.contentView.layoutIfNeeded()
+            }) { (_) in
+                self.changeButtonStackState(to: .left)
+                UIView.animate(withDuration: 0.3, delay: 1, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
+                    self.mainView.frame = CGRect(x: initialX + swipableLength, y: 0, width: width, height: height)
+                    self.contentView.layoutIfNeeded()
+                }) { (_) in
+                    UIView.animate(withDuration: 0.3, delay: 0.5, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
+                        self.mainView.frame = CGRect(x: initialX, y: 0, width: width, height: height)
+                        self.contentView.layoutIfNeeded()
+                    }) { (_) in
+                        self.delegate?.tutorialAnimationDidFinish()
+                    }
+                }
+            }
         }
     }
     

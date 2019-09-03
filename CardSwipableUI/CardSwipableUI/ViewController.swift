@@ -13,9 +13,11 @@ enum ButtonType : String {
 }
 
 class ViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, SwipableCardButtonActionDelegate {
-
-    @IBOutlet weak var collectionView: UICollectionView!
     
+    @IBOutlet weak var tutorialView: UIView!
+    @IBOutlet weak var collectionView: UICollectionView!
+    var activeCell: SwipableCollectionViewCell?
+    var activeCellIndex: Int?
     // Data source for number of cards
     let cards : [(name: String, type: UIColor)] = [(name:"Blue", type:.blue),
                                                    (name: "Red", type: .red),
@@ -26,9 +28,27 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        tutorialView.isHidden = true
+        view.bringSubviewToFront(tutorialView)
+        let gradient = CAGradientLayer()
+        gradient.frame = tutorialView.bounds
+        gradient.colors = [
+            UIColor.init(white: 0, alpha: 0).cgColor,
+            UIColor.black.cgColor,
+            UIColor.black.cgColor
+        ]
+        tutorialView.backgroundColor = .clear
+        tutorialView.layer.insertSublayer(gradient, at: 0)
         
         collectionView.delegate = self
         collectionView.dataSource = self
+        collectionView.reloadData()
+        collectionView.performBatchUpdates(nil, completion: {
+            (result) in
+            if self.activeCell != nil {
+                self.activeCell?.showInitialSwipeAnimations()
+            }
+        })
     }
     
     // This function will return dynamic list of buttons for each cell. We have limited to maximum number of 3 buttons ,however code will support any number of buttons for each card.
@@ -43,7 +63,7 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return buttons
     }
     
-// MARK: Collection View Functions
+    // MARK: Collection View Functions
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return cards.count
@@ -55,6 +75,11 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         cell.setCardStyle(name: cards[indexPath.row].name, color: cards[indexPath.row].type)
         cell.delegate = self
         cell.clipsToBounds = false
+        cell.tag = indexPath.row
+        if indexPath.row == 0 {
+            self.activeCell = cell
+            self.activeCellIndex = 0
+        }
         return cell
     }
     
@@ -74,15 +99,42 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         return 30
     }
     
-// MARK: SwipableCardButtonAction function
+    
+    
+    // MARK: SwipableCardButtonAction function
     
     func registerAction(forIdentifier iD: String) {
         let button : ButtonType = ButtonType(rawValue: iD) ?? ButtonType.first
         showButtonAction(forButton: button)
     }
     
+    func registerSelection(forCell row: Int) {
+        if row != activeCellIndex {
+            let path = IndexPath(item: row, section: 0);
+            let cell = collectionView.cellForItem(at: path)
+            if let activeCell = activeCell {
+                activeCell.resetCell()
+            }
+            self.activeCell = cell as? SwipableCollectionViewCell
+            self.activeCellIndex = row
+        }
+    }
+    
+    func tutorialAnimationDidBegin() {
+        UIView.animate(withDuration: 0.2) {
+            self.tutorialView.isHidden = false
+        }
+    }
+    
+    func tutorialAnimationDidFinish() {
+        UIView.animate(withDuration: 0.2) {
+            self.tutorialView.isHidden = true
+        }
+    }
+    
+    
     func showButtonAction(forButton button : ButtonType) {
-
+        
         let alert = UIAlertController(title: button.rawValue + " Action Done.", message: "", preferredStyle: UIAlertController.Style.alert)
         alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.cancel, handler: nil))
         self.present(alert, animated: true, completion: nil)
