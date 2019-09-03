@@ -28,7 +28,22 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        configureTutorialView()
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.reloadData()
+        collectionView.performBatchUpdates(nil, completion: {
+            (result) in
+            if self.activeCell != nil {
+                self.activeCell?.showInitialSwipeAnimations()
+            }
+        })
+    }
+    
+    func configureTutorialView() {
         tutorialView.isHidden = true
+        tutorialView.alpha = 0
         view.bringSubviewToFront(tutorialView)
         let gradient = CAGradientLayer()
         gradient.frame = tutorialView.bounds
@@ -39,16 +54,6 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
         ]
         tutorialView.backgroundColor = .clear
         tutorialView.layer.insertSublayer(gradient, at: 0)
-        
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.reloadData()
-        collectionView.performBatchUpdates(nil, completion: {
-            (result) in
-            if self.activeCell != nil {
-                self.activeCell?.showInitialSwipeAnimations()
-            }
-        })
     }
     
     // This function will return dynamic list of buttons for each cell. We have limited to maximum number of 3 buttons ,however code will support any number of buttons for each card.
@@ -121,13 +126,16 @@ class ViewController: UIViewController, UICollectionViewDelegate, UICollectionVi
     }
     
     func tutorialAnimationDidBegin() {
-        UIView.animate(withDuration: 0.2) {
-            self.tutorialView.isHidden = false
+        self.tutorialView.isHidden = false
+        UIView.animate(withDuration: 0.3) {
+            self.tutorialView.alpha = 1
         }
     }
     
     func tutorialAnimationDidFinish() {
-        UIView.animate(withDuration: 0.2) {
+        UIView.animate(withDuration: 0.3, animations: {
+            self.tutorialView.alpha = 0
+        }) { (_) in
             self.tutorialView.isHidden = true
         }
     }
